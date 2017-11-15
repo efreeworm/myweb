@@ -2,7 +2,7 @@ version: "3"
 services:
   web:
     # 使用你自己的username/repo:tag
-    image: efreeworm/get-started:part1
+    image: hub.c.163.com/efreeworm/get-started:latest
     deploy:
       replicas: 5
       resources:
@@ -13,6 +13,28 @@ services:
         condition: on-failure
     ports:
       - "80:80"
+    networks:
+      - webnet
+  visualizer:
+    image: hub.c.163.com/learndocker/visualizer:stable
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    networks:
+      - webnet
+  redis:
+    image: hub.c.163.com/library/redis:4.0.1-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data:/data
+    deploy:
+      placement:
+        constraints: [node.role == manager]
     networks:
       - webnet
 networks:
